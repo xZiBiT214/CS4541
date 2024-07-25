@@ -196,4 +196,87 @@ The key's randomart image is:
   "documentation_url": "https://docs.github.com/rest/users/keys#create-a-public-ssh-key-for-the-authenticated-user",
   "status": "401"
 }
-[?2004h]0;cr_ubuntu@DESKTOP-48PB37Q: ~/CS_4541[01;32mcr_ubuntu@DESKTOP-48PB37Q[00m:[01;34m~/CS_4541[00m$ curl -u xZiBiT214:CaMrYn03 https://api.github.com/user/keys -d '{"title":"UB_WSL_SP", "key":"SHA256:pcUR/mPGgPWugjJ3IVNFDHiZnApnjM7YPaNcHw2ZlJA camryn.ruiz.22@gmail.com"}'[1P"}'[1P"}'[1P"}'[1P"}'[1P"}'[1P"}'[1P"}'[1P"}'[1P"}'[1P"}'[1P"}'[1P"
+[?2004h]0;cr_ubuntu@DESKTOP-48PB37Q: ~/CS_4541[01;32mcr_ubuntu@DESKTOP-48PB37Q[00m:[01;34m~/CS_4541[00m$ curl -u xZiBiT214:CaMrYn03 https://api.github.com/user/keys -d '{"title":"UB_WSL_SP", "key":"SHA256:pcUR/mPGgPWugjJ3IVNFDHiZnApnjM7YPaNcHw2ZlJA camryn.ruiz.22@gmail.com"}'[1P"}'[1P"}'[1P"}'[1P"}'[1P"}'[1P"}'[1P"}'[1P"}'[1P"}'[1P"}'[1P"}'[1P"}'[1P"}'[1P"}'[1P"}'[1P"}'[1P"}'[1P"}'[1P"}'[1P"}'[1P"}'[1P"}'[1P"}'[1P"}'[1P"}'
+[?2004l{
+  "message": "Requires authentication",
+  "documentation_url": "https://docs.github.com/rest/users/keys#create-a-public-ssh-key-for-the-authenticated-user",
+  "status": "401"
+}
+[?2004h]0;cr_ubuntu@DESKTOP-48PB37Q: ~/CS_4541[01;32mcr_ubuntu@DESKTOP-48PB37Q[00m:[01;34m~/CS_4541[00m$ curl -u xZiBiT214:CaMrYn03 https://api.github.com/user/keys -d '{"title":"UB_WSL_SP", "key":"SHA256:pcUR/mPGgPWugjJ3IVNFDHiZnApnjM7YPaNcHw2ZlJA"}'[C[C[C[1PpcUR/mPGgPWugjJ3IVNFDHiZnApnjM7YPaNcHw2ZlJA"}'[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[1PpcUR/mPGgPWugjJ3IVNFDHiZnApnjM7YPaNcHw2ZlJA"}'[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[1PpcUR/mPGgPWugjJ3IVNFDHiZnApnjM7YPaNcHw2ZlJA"}'[C[C[C[C[C[C[C[C[C[C[C[C[C[C[1PpcUR/mPGgPWugjJ3IVNFDHiZnApnjM7YPaNcHw2ZlJA"}'[C[C[C[C[C[C[C[C[C[C[C[C[C[1PpcUR/mPGgPWugjJ3IVNFDHiZnApnjM7YPaNcHw2ZlJA"}'[C[C[C[C[C[C[C[C[C[C[C[C[1PpcUR/mPGgPWugjJ3IVNFDHiZnApnjM7YPaNcHw2ZlJA"}'[C[C[C[C[C[C[C[C[C[C[C[1PpcUR/mPGgPWugjJ3IVNFDHiZnApnjM7YPaNcHw2ZlJA"}'[C[C[C[C[C[C[C[C[C[C
+[?2004l{
+  "message": "Requires authentication",
+  "documentation_url": "https://docs.github.com/rest/users/keys#create-a-public-ssh-key-for-the-authenticated-user",
+  "status": "401"
+}
+[?2004h]0;cr_ubuntu@DESKTOP-48PB37Q: ~/CS_4541[01;32mcr_ubuntu@DESKTOP-48PB37Q[00m:[01;34m~/CS_4541[00m$ clc
+[?2004lcCommand 'clc' not found, but there are 23 similar ones.
+[?2004h]0;cr_ubuntu@DESKTOP-48PB37Q: ~/CS_4541[01;32mcr_ubuntu@DESKTOP-48PB37Q[00m:[01;34m~/CS_4541[00m$ clear
+[?2004l[H[2J[3J[?2004h]0;cr_ubuntu@DESKTOP-48PB37Q: ~/CS_4541[01;32mcr_ubuntu@DESKTOP-48PB37Q[00m:[01;34m~/CS_4541[00m$ ls
+[?2004lREADME.md  [0m[01;34massignment_1[0m  [01;34massignment_2[0m
+[?2004h]0;cr_ubuntu@DESKTOP-48PB37Q: ~/CS_4541[01;32mcr_ubuntu@DESKTOP-48PB37Q[00m:[01;34m~/CS_4541[00m$ git init
+[?2004lReinitialized existing Git repository in /home/cr_ubuntu/CS_4541/.git/
+[?2004h]0;cr_ubuntu@DESKTOP-48PB37Q: ~/CS_4541[01;32mcr_ubuntu@DESKTOP-48PB37Q[00m:[01;34m~/CS_4541[00m$ git commit -m "F[Kfirst_commit"
+[?2004lOn branch master
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	[31massignment_1/[m
+	[31massignment_2/[m
+
+nothing added to commit but untracked files present (use "git add" to track)
+[?2004h]0;cr_ubuntu@DESKTOP-48PB37Q: ~/CS_4541[01;32mcr_ubuntu@DESKTOP-48PB37Q[00m:[01;34m~/CS_4541[00m$ git commit -m "first_commit"[Kgit add -a[K-all
+[?2004l[?2004h]0;cr_ubuntu@DESKTOP-48PB37Q: ~/CS_4541[01;32mcr_ubuntu@DESKTOP-48PB37Q[00m:[01;34m~/CS_4541[00m$ git add --allcommit -m "first_commit"
+[?2004l[master c5bdecf] first_commit
+ 12 files changed, 337 insertions(+)
+ create mode 100644 assignment_1/Makefile
+ create mode 100644 assignment_1/Readme.txt
+ create mode 100755 assignment_1/main
+ create mode 100644 assignment_1/main.c
+ create mode 100644 assignment_1/main.o
+ create mode 100644 assignment_1/typescript
+ create mode 100644 assignment_2/Makefile
+ create mode 100644 assignment_2/Readme.txt
+ create mode 100644 assignment_2/heap.c
+ create mode 100644 assignment_2/heap.h
+ create mode 100644 assignment_2/inpt_ex.txt
+ create mode 100644 assignment_2/main.c
+[?2004h]0;cr_ubuntu@DESKTOP-48PB37Q: ~/CS_4541[01;32mcr_ubuntu@DESKTOP-48PB37Q[00m:[01;34m~/CS_4541[00m$ git remote add origin git@github.com:xZiBiT214\[K/CS3[K4541.git
+[?2004l[?2004h]0;cr_ubuntu@DESKTOP-48PB37Q: ~/CS_4541[01;32mcr_ubuntu@DESKTOP-48PB37Q[00m:[01;34m~/CS_4541[00m$ git push -u origin master
+[?2004lThe authenticity of host 'github.com (140.82.112.3)' can't be established.
+ED25519 key fingerprint is SHA256:+DiY3wvvV6TuJJhbpZisF/zLDA0zPMSvHdkr4UvCOqU.
+This key is not known by any other names
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+ERROR: Repository not found.
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+[?2004h]0;cr_ubuntu@DESKTOP-48PB37Q: ~/CS_4541[01;32mcr_ubuntu@DESKTOP-48PB37Q[00m:[01;34m~/CS_4541[00m$ git push -u origin master
+[?2004lERROR: Repository not found.
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+[?2004h]0;cr_ubuntu@DESKTOP-48PB37Q: ~/CS_4541[01;32mcr_ubuntu@DESKTOP-48PB37Q[00m:[01;34m~/CS_4541[00m$ curl -u Amruth-Smaragdine https://api.github.com/user/repos -d "{\"name\": \"testrepo\"}"[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C https://api.github.com/user/repos -d "{\"name\": \"testrepo[1P\"}"[A]0;cr_ubuntu@DESKTOP-48PB37Q: ~/CS_4541[01;32mcr_ubuntu@DESKTOP-48PB37Q[00m:[01;34m~/CS_4541[00m$ [C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C https://api.github.com/user/repos -d "{\"name\": \"testrepo\[1P"}"[A]0;cr_ubuntu@DESKTOP-48PB37Q: ~/CS_4541[01;32mcr_ubuntu@DESKTOP-48PB37Q[00m:[01;34m~/CS_4541[00m$ [C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C https://api.github.com/user/repos -d "{\"name\": \"testrepo\"[1P}"[A]0;cr_ubuntu@DESKTOP-48PB37Q: ~/CS_4541[01;32mcr_ubuntu@DESKTOP-48PB37Q[00m:[01;34m~/CS_4541[00m$ [C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C https://api.github.com/user/repos -d "{\"name\": \"testrepo\"}[1P"[A]0;cr_ubuntu@DESKTOP-48PB37Q: ~/CS_4541[01;32mcr_ubuntu@DESKTOP-48PB37Q[00m:[01;34m~/CS_4541[00m$ [C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C https://api.github.com/user/repos -d "{\"name\": \"testrepo\"}"[K[A]0;cr_ubuntu@DESKTOP-48PB37Q: ~/CS_4541[01;32mcr_ubuntu@DESKTOP-48PB37Q[00m:[01;34m~/CS_4541[00m$ [C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C https://api.github.com/user/repos -d "{\"name\": \"testrepo\"}" [K[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[1P
+[K[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[1P[1P[1P[1P[1P[1P[1P[1P[1P[1P[1P[C[1@ [1@x[1@Z[1@i[1@B[1@i[1@T[1@1[1P[1@2[1@1[1@4
+[?2004lEnter host password for user 'xZiBiT214':
+{
+  "message": "Requires authentication",
+  "documentation_url": "https://docs.github.com/rest/repos/repos#create-a-repository-for-the-authenticated-user",
+  "status": "401"
+}
+[?2004h]0;cr_ubuntu@DESKTOP-48PB37Q: ~/CS_4541[01;32mcr_ubuntu@DESKTOP-48PB37Q[00m:[01;34m~/CS_4541[00m$ git push
+[?2004lfatal: The current branch master has no upstream branch.
+To push the current branch and set the remote as upstream, use
+
+    git push --set-upstream origin master
+
+[?2004h]0;cr_ubuntu@DESKTOP-48PB37Q: ~/CS_4541[01;32mcr_ubuntu@DESKTOP-48PB37Q[00m:[01;34m~/CS_4541[00m$ git push -u origin master
+[?2004lERROR: Repository not found.
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+[?2004h]0;cr_ubuntu@DESKTOP-48PB37Q: ~/CS_4541[01;32mcr_ubuntu@DESKTOP-48PB37Q[00m:[01;34m~/CS_4541[00m$ git init
+[?2004lReinitialized existing Git repository in /home/cr_ubuntu/CS_4541/.git/
+[?2004h]0;cr_ubuntu@DESKTOP-48PB37Q: ~/CS_4541[01;32mcr_ub
