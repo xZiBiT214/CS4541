@@ -1,6 +1,8 @@
 #include "heap.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
+#include <string.h>
 
 #define INITIAL_SIZE 1000	// Initial Heap Word Size
 #define MAX_SIZE 100000		// Max Heap Word Size
