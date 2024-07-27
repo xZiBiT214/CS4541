@@ -9,9 +9,9 @@
 #define WORD_SIZE 4		// in bytes
 #define ALIGNMENT 8		// double-word alignment
 
-static uint32_t heap[INITIAL_SIZE];
-static uint32_t heap_size = INITIAL_SIZE;
-static uint32_t heap_top = 0; // Points to the Top of the Heap
+uint32_t heap[INITIAL_SIZE];
+uint32_t heap_size = INITIAL_SIZE;
+uint32_t heap_top = 0; // Points to the Top of the Heap
 
 // Heap Structure:
 typedef struct {
@@ -51,17 +51,44 @@ void* myalloc(uint32_t size) {
 	return (void*)payload; // Return address of the payload
 }
 
-// Implement Realloc
+// Implement Reallocation:
 void* myrealloc(void* ptr, uint32_t size) {
-	// Implement reallocation logic
-   	// If size is 0, it should free the block (equivalent to myfree)
-   	// Otherwise, resize the block and return new pointer
-	return;
+	if ( ptr == NULL ) {
+		return myalloc(size); // If pointer is NULL allocate new memory
+	}
+
+	if ( size == 0 ) {
+		// If the size is 0, free the Memory
+		myfree(ptr);
+		return NULL;
+	}
+
+   	Block* block = (Block*)((uint8_t*)ptr - sizeof(uint32_t)); // Get the block from the pointer
+	uint32_t old_size = block->header & ~1; // Get the old size from the block header 
+	uint32_t new_size = block_size(size); // Calculate the new size needed
+	
+	if ( new_size <= old_size ) {
+		return ptr; // If the new size is <= old size return the original pointer
+	}
+
+	void* new_ptr = myalloc(size); // Allocate new memory of the new size
+	if (new_ptr != NULL) {
+		memcpy(new_ptr, ptr, old_size - sizeof(uint32_t) * 2); // Copy the old data to the new memory
+		myfree(ptr); // Free the old memory
+	}
+
+	return new_ptr; // Return the new pointer
 }
 
 // Implement Free: Mark Block as Free
-void myfree(void* ptr, uint32_t size) {
+void myfree(void* ptr) {
 	if (ptr == NULL) return;
+	
+	Block* block = (Block*)((uint8_t*)ptr - sizeof(uint32_t));
+	block->header &= ~1;
+	uint32_t* footer = (uint32_t*)((uint8_t*)block + (block->header & ~1) - sizeof(uint32_t));
+	*footer = block->header;
+	
 	return;
 }
 

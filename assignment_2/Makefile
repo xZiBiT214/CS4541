@@ -1,10 +1,10 @@
 CC = gcc # Compiler
-TARGET = main # Define the Target Executable
+TARGET = exec # Define the Target Executable
 INCL = includes # Define Includes
 SRCS =  main.c \
 	src/heap.c
 OBJS = $(SRCS:.c=.o) # Defining the Objects
-CFLAGS = -std=c99 -Wall -I$(INCL) # Compiler Flags
+CFLAGS = -std=c99 -Wall -g -I$(INCL) # Compiler Flags
 INPT_FILE = inpt_ex.txt # Input File Example (Can Modify if you want another File or Manually Run it)
 
 # Default Target
@@ -25,3 +25,5 @@ run: $(TARGET)
 # Clean the Project
 clean:
 	rm -f $(TARGET) $(OBJS)
+
+.PHONY: all clean run

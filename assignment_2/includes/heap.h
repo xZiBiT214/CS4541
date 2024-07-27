@@ -8,8 +8,13 @@
 
 // Function Prototypes
 void* myalloc(uint32_t size);
-void* remyalloc(void* ptr);
-void myfree(void* ptr, uint32_t size);
+void* myrealloc(void* ptr, uint32_t size);
+void myfree(void* ptr);
 int mysbrk(int size);
+
+// Heap Variables:
+extern uint32_t heap[];
+extern uint32_t heap_size;
+extern uint32_t heap_top;
 
 #endif // HEAP_H
