@@ -5,6 +5,7 @@ SRCS =  main.c \
 	src/heap.c
 OBJS = $(SRCS:.c=.o) # Defining the Objects
 CFLAGS = -std=c99 -Wall -I$(INCL) # Compiler Flags
+INPT_FILE = inpt_ex.txt # Input File Example (Can Modify if you want another File or Manually Run it)
 
 # Default Target
 all: $(TARGET) 
@@ -19,7 +20,7 @@ $(TARGET): $(OBJS)
 
 # Executing the Project
 run: $(TARGET)
-	./$(TARGET)
+	./$(TARGET) $(INPT_FILE)
 
 # Clean the Project
 clean:

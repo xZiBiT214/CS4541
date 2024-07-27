@@ -9,7 +9,7 @@
 // Function Prototypes
 void* myalloc(uint32_t size);
 void* remyalloc(void* ptr);
-void* myfree(void* ptr, uint32_t size);
-void* mysbrk(int size);
+void myfree(void* ptr, uint32_t size);
+int mysbrk(int size);
 
 #endif // HEAP_H

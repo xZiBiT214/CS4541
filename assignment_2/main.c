@@ -4,6 +4,9 @@
 #include <stdint.h>
 #include <string.h>
 
+int heap_top = 100;
+int heap[];
+
 // Function to Process the Input File:
 void process_inpt_file(const char* filename) {
 	FILE* file = fopen(filename, "r"); // Open the file in Read mode

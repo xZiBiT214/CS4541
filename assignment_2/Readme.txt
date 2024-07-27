@@ -17,7 +17,7 @@ all:
 clean:
 	* cleans the project
 run:
-	* executes the project
+	* executes the project (with inpt_ex.txt)
 
 --- Inputs ---
 The Program processes a comma-seperated value text file to get a series of allocation, reallocation, and free calls
