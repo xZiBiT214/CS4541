@@ -61,13 +61,25 @@ void* myrealloc(void* ptr, uint32_t size) {
 
 // Implement Free: Mark Block as Free
 void myfree(void* ptr, uint32_t size) {
-	// Implement freeing logic: Mark block as free 
+	if (ptr == NULL) return;
 	return;
 }
 
 // Implement Heap Expansion or Shrinking Logic:
-int mysbrk(int size) {
-	// Implement heap expansion or shrinking logic
-   	// Returns 0 on success, -1 on failure (e.g., exceeding max heap size)
-	return;
+int mysbrk(int size) { 
+	if (size > 0) {
+		// Check to see if the new requested size is bigger than the max size heap
+		if ( heap_size + size > MAX_SIZE ) {
+			return -1;
+		}
+	}
+	else {	
+		// Check to see if the new requested size is smaller than the initial size heap
+		if ( heap_size + size < INITIAL_SIZE ) {
+			return -1;
+		}
+		heap_size += size; // Update the size of the heap
+	}
+ 
+	return 0;
 }
