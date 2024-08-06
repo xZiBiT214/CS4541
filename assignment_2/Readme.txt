@@ -17,7 +17,7 @@ all:
 clean:
 	* cleans the project
 run:
-	* executes the project (with inpt_ex.txt)
+	* makes & executes the project (with inpt_ex.txt)
 
 --- Inputs ---
 The Program processes a comma-seperated value text file to get a series of allocation, reallocation, and free calls
@@ -41,10 +41,34 @@ Calls to myfree will be indicated in the input file as follows:
 * An "f" to indicate that this is a free call
 * An integer between 0 and 999 to specify the allocation call that this call is freeing
 
-(Example given in inpt_ex.txt)
+Example given in inpt_ex.txt:
+a, 5, 0
+f, 0
+a, 10, 1
+r, 20, 1, 2
+f, 2
 
 --- Outputs ---
 The output will be a comma-seperated value text file called "output.txt"
+
+Example Output:
+0, 0x00000001 // placeholder
+1, 0x00000F98 // header
+2, // payload
+3, // payload
+4, 0x00000011 // remaining footer of myalloc(5)
+5, 0x00000F88 // remaining header of free block after myalloc(5)
+6, 0x00000018 // remaining footer of myalloc(10)
+7, 0x00000021 // remaining header of myrealloc(20)
+......
+10, 0x00000011 // copied payload from word 4 of myrealloc(20)
+11, 0x00000F88 // copied payload from word 5 of myrealloc(20)
+......
+14, 0x00000021 // remaining footer of myrealloc(20)
+15, 0x00000F60 // remaining header of free block after myrealloc(20)
+......
+998, 0x00000F98 // footer
+999, 0x00000001 // placeholder
 
 --- References ---
 1. https://www.geeksforgeeks.org/dynamic-memory-allocation-in-c-using-malloc-calloc-free-and-realloc/
