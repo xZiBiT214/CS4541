@@ -15,29 +15,24 @@ int heapSize = 1000 * sizeof(WORD);
 
 // Function Definitions
 void split(Block* block, size_t size, ExpList* freeBlock) {
-	unsigned int leftFooter = block->payloadIndex + size / sizeof(WORD); 
-	if (size % sizeof(WORD) > 0){
-        leftFooter++;
-    }
+    unsigned int leftFooter = block->payloadIndex + size / sizeof(WORD); 
+    if (size % sizeof(WORD) > 0) leftFooter++;
     if (size < sizeof(WORD)) leftFooter++;
 
-    //calculating next header
+    // Calculating the next header
     unsigned int nextHeader = leftFooter + 1; 
     if (nextHeader % 2 == 0) nextHeader++;
 		
-    //calculating next footer
+    // Calculate the next footer
     unsigned int nextFooter = block->payloadIndex + block->size / sizeof(WORD); 
-    
-    //padding
     if (block->size % sizeof(WORD) > 0) nextFooter++;
 	
     if (nextFooter > heapSize/sizeof(WORD)) nextFooter = heapSize/sizeof(WORD);
 
     unsigned int nextSize = (nextFooter - nextHeader) * sizeof(WORD);
+    if (nextSize < sizeof(WORD) * 2) return; // Ensure there's enough space for a new block
 
-    if (nextSize < sizeof(WORD) * 2) return;
-
-    //create a new free block
+    // Create a new free block
     Block* nextBlock = malloc(sizeof(Block)); 
     nextBlock->size = nextSize;
     nextBlock->free = 1;
@@ -45,25 +40,21 @@ void split(Block* block, size_t size, ExpList* freeBlock) {
     block->free = 0;
     block->size = size;
 
-    if (block->next != 0) {
-        nextBlock->prev = block;
-        nextBlock->next = block->next; 
+    // Update the linked list pointers
+    nextBlock->prev = block;
+    nextBlock->next = block->next;
+    if (block->next != NULL) {
         block->next->prev = nextBlock;
-        block->next = nextBlock;
     }
-    else {
-        nextBlock->prev = block;
-        nextBlock->next = 0; 
-        block->next = nextBlock;
-    }
+    block->next = nextBlock;
 
-    //for explicit free list, update pointer of the block
+    // For Explicit Free List, update pointer of the block
     if (freeList == 'E') freeBlock->block = nextBlock;
 
     int sz = nextBlock->size/sizeof(WORD);
     if (nextBlock->size % sizeof(WORD) > 0) sz++;
 
-    //update heap
+    // Finally update the heap
     int update = 0;
     update = (sz-1)*4;
     heap[nextBlock->payloadIndex - 1] = update; // header
@@ -72,9 +63,9 @@ void split(Block* block, size_t size, ExpList* freeBlock) {
 
 void mysbrk(int size) {
     if (heapSize + size + 8 > MAX_HEAP) {
-    char* filename = "output.txt";
-    char* mode = "w+";
-    FILE* file = fopen(filename, mode);
+        char* filename = "output.txt";
+        char* mode = "w+";
+        FILE* file = fopen(filename, mode);
 	fprintf(file, "Error. Heap can't grow past 100000 words.\n");
        	fclose(file);
         exit(1);
@@ -84,74 +75,87 @@ void mysbrk(int size) {
     heapSize += size + 8;
 }
 
-//returns a free block based on first fit policy
-//for implicit free list
-Block* firstFitImp(int size) {
-    Block* block;
-    block = head;
-    if (head == 0) return 0;
-    
-    while (block != 0) {
-        // if block is free and the size fits
+Block* implicit_first_fit(int size) {
+    // Traverse the implicit free list starting from the head
+    Block* block = head;
+
+    // If the list is empty, return NULL
+    if (block == NULL) return NULL;
+
+    // Loop through the blocks in the list
+    while (block != NULL) {
+        // If the block is free and its size is sufficient, return the block
         if (block->free && block->size >= size) return block;
-        block = block->next;
+        block = block->next; // Move to the next block
     }
-    
-    return block;
+
+    // If no suitable block is found, return NULL
+    return NULL;
 }
 
-//returns a free block based on best fit policy
-//for implicit free list
-Block* bestFitImp(int size) {
-    Block* block = head;
-    Block* block2 = 0;
+// Returns a free block based on Best-Fit Policy for the Implicit Free List
+Block* implicit_best_fit(int size) {
+    // Pointer to traverse the implicit free list
+    Block* currentBlock = head;
 
-    if (head == 0) return 0;
-   
-    while (block != 0) {
-        if (block->free) {
-            if (block->size >= size) {
-                if (block2 == 0) block2 = block;
-                else {
-                    if ((block->size-size) < (block2->size-size)) block2 = block;
-                }
+    // Pointer to keep track of the best fit block
+    Block* bestFitBlock = 0;
+
+    // Traverse the implicit free list to find the best fit block
+    while (currentBlock != 0) {
+        // Check if the current block is free and of sufficient size
+        if (currentBlock->free && currentBlock->size >= size) {
+            // If no best fit block has been found yet or the current block is a better fit, update bestFitBlock
+            if (bestFitBlock == 0 || (currentBlock->size - size) < (bestFitBlock->size - size)) bestFitBlock = currentBlock;
+        }
+
+        currentBlock = currentBlock->next; // Move to the next block in the list
+    }
+
+    // Return the best fit block found, or 0 if none was found
+    return bestFitBlock;
+}
+
+// Returns a free block based on the First-Fit Policy for the Explicit Free List
+ExpList* explicit_first_fit(int size) {
+    // Start with the head of the explicit free list
+    ExpList* freeBlock = expHead;
+
+    // If the explicit free list is empty, return NULL
+    if (freeBlock == NULL) return NULL;
+
+    // Traverse the explicit free list to find a suitable block
+    while (freeBlock != NULL) {
+        // Check if the current block's size is sufficient for the requested size
+        if (freeBlock->block->size >= size) return freeBlock;
+        freeBlock = freeBlock->next; // Move to the next block in the list
+    }
+
+    // If no suitable block is found, return NULL
+    return NULL;
+}
+
+// Returns a free block based on the Best-Fit Policy for the Explicit Free List
+ExpList* explicit_best_fit(int size) {
+    ExpList* freeBlock = expHead; // Pointer to traverse the explicit free list
+    ExpList* bestFitBlock = NULL; // Pointer to track the best fitting block found so far
+
+    // If the explicit free list is empty, return NULL
+    if (freeBlock == NULL) return NULL;
+
+    // Traverse the explicit free list to find the best fitting block
+    while (freeBlock != NULL) {
+        if (freeBlock->block->size >= size) {
+            // If this is the first suitable block or a better fit, update bestFitBlock
+            if (bestFitBlock == NULL || (freeBlock->block->size - size) < (bestFitBlock->block->size - size)) {
+                bestFitBlock = freeBlock;
             }
         }
-        block = block->next;
-    }
-	return block2;
-}
-
-//returns a free block based on first fit policy
-//for explicit free list
-ExpList* firstFitExp(int size) {
-    ExpList* freeBlock;
-        if (expHead == 0) return 0;
-        freeBlock = expHead;
-        while (freeBlock != 0){
-            if (freeBlock->block->size >= size) return freeBlock;
-            freeBlock = freeBlock->next;
-        }
-
-    return freeBlock;
-}
-
-//returns a free block based on best fit policy
-//for explicit free list
-ExpList* bestFitExp(int size) {
-    ExpList* freeBlock;
-    ExpList* freeBlock2 = 0;
-    if (expHead == 0) return 0;
-    freeBlock = expHead;
-    while (freeBlock != 0) {
-        if (freeBlock->block->size >= size) {
-            if (freeBlock2 == 0) freeBlock2 = freeBlock;
-            else if ((freeBlock->block->size-size) < (freeBlock2->block->size-size)) freeBlock2 = freeBlock;
-        }
-        freeBlock = freeBlock->next;
+        freeBlock = freeBlock->next; // Move to the next block in the list
     }
 
-    return freeBlock2;
+    // Return the best fitting block found, or NULL if none found
+    return bestFitBlock;
 }
 
 // returns pointer to payload index
@@ -159,20 +163,20 @@ void* myalloc(int size) {
     Block *block = 0;
 
     if (freeList == 'I') {
-        if (fit == 'F') block = firstFitImp(size);
-        else if (fit == 'B') block = bestFitImp(size);
+        if (fit == 'F') block = implicit_first_fit(size);
+        else if (fit == 'B') block = implicit_best_fit(size);
     }
 
     ExpList* freeBlock = 0;
     if (freeList == 'E') {
         if (fit == 'F'){
-            freeBlock = firstFitExp(size);
+            freeBlock = explicit_first_fit(size);
             if (freeBlock != 0) {
                 block = freeBlock->block;
 	    }
         }
         else if (fit == 'B'){
-            freeBlock = bestFitExp(size);
+            freeBlock = explicit_best_fit(size);
             if (freeBlock != 0){
                 block = freeBlock->block;
             }
@@ -275,11 +279,6 @@ void* myalloc(int size) {
     update = (sz+2)*4 + 1;
     heap[block->payloadIndex - 1] = update; // header
     heap[block->payloadIndex + sz] = update; // footer
-
-    //debugging purposes
-    //printf("header: %08x\n", heap[block->payloadIndex - 1]);
-    //printf("footer: %08x\n", heap[block->payloadIndex + sz]);
-    //printf("payloadIndex: %d\n", block->payloadIndex);
 
     return &block->payloadIndex;
 }
@@ -412,7 +411,6 @@ Block* merge(Block* block, ExpList* freeBlock, char* conjunction){
     return prev;
 }
 
-
 //coalescing function, which further calls merge function
 Block* coalesce(Block* block)
 {
@@ -491,36 +489,35 @@ Block* coalesce(Block* block)
 	return block;
 }
 
-//calls coalesce function, which calls merge function
+// LAST TWO DONE
+// Free Function:
 void myfree(void *pointer) {
     Block* block = pointer;
     block->free = 1;
 
-    coalesce(block);
-
-    return;
+    // Call the coalesce function, which will then call the merge function
+    coalesce(block); 
 }
 
-//realloc calls malloc first before freeing old pointer
+// Realloc Function:
 int *myrealloc(void* pointer, int size) {
+    // Allocate a new block with the requested size
     void* ptr = myalloc(size);
 
-    Block* block1 = ptr;
-    Block* block2 = pointer;
+    // Cast the new and old pointers to Block structures
+    Block* newBlock = ptr;
+    Block* oldBlock = pointer;
 
-    //checking for double word alignment
-    int sz = block2->size/sizeof(WORD);
-    if (block2->size % sizeof(WORD) > 0) sz++;
-    while ((sz*sizeof(WORD))%8 > 0) {
-        sz++;
-    }
+    // Checking for double word alignment
+    int oldBlockSizeInWords = oldBlock->size / sizeof(WORD);
+    if (oldBlock->size % sizeof(WORD) > 0) oldBlockSizeInWords++;
+    while ((oldBlockSizeInWords * sizeof(WORD)) % 8 > 0) oldBlockSizeInWords++;
 
-    // copy old payload into new block
-    for (int i = 0; i < sz; i++) {
-        heap[block1->payloadIndex + i] = heap[block2->payloadIndex + i];
-    }
+    // Copy old payload into the new block
+    for (int i = 0; i < oldBlockSizeInWords; i++) heap[newBlock->payloadIndex + i] = heap[oldBlock->payloadIndex + i];
 
-    // free old pointer
+    // Free the old pointer & Return new pointer
     myfree(pointer);
     return ptr;
 }
+
