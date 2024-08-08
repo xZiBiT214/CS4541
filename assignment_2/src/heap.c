@@ -282,214 +282,237 @@ void* myalloc(int size) {
 
     return &block->payloadIndex;
 }
+// Function to merge two adjacent free blocks together, called by the coalesce function.
+// Merges the current block with the previous block.
+Block* merge(Block* currentBlock, ExpList* freeListEntry, char* mergeDirection)
+{
+    // If the current block is not the last one in the heap
+    if (currentBlock->next != 0) {
+        // Calculate size in words for the previous block
+        unsigned int prevBlockSizeInWords = currentBlock->prev->size / sizeof(WORD);
 
-//merge two free blocks together (block and block->prev), called by coalesce function
-Block* merge(Block* block, ExpList* freeBlock, char* conjunction){
-
-    if (block->next != 0){
-        //check for double word alignment
-        unsigned int sz = block->prev->size / sizeof(WORD);
-        if (block->prev->size % sizeof(WORD) > 0){
-            sz++;
-        }
-        while ((sz*sizeof(WORD))%8 > 0){
-            sz++;
-        }
-
-        // header and footer size
-        sz += 2; 
-        sz += block->size / sizeof(WORD);
-        if (block->size % sizeof(WORD) > 0){
-            sz++;
-        }
-        while ((sz*sizeof(WORD))%8 > 0){
-            sz++;
-        }
-        //update size
-        block->prev->size = sz * sizeof(WORD); 
-
-    }else{
-        //check for double word alignment
-        unsigned int sz = block->prev->size / sizeof(WORD);
-        if (block->prev->size % sizeof(WORD) > 0){
-            sz++;
-        }
-        while ((sz*sizeof(WORD))%8 > 0){
-            sz++;
+        // Adjust size if it's not aligned to a WORD boundary
+        if (currentBlock->prev->size % sizeof(WORD) > 0) {
+            prevBlockSizeInWords++;
         }
 
-        // footer and header size
-        sz += 2; 
-        sz += block->size / sizeof(WORD);
-        
-        //update size
-        block->prev->size = sz * sizeof(WORD); 
+        // Ensure size is aligned to 8 bytes (for double word alignment)
+        while ((prevBlockSizeInWords * sizeof(WORD)) % 8 > 0) {
+            prevBlockSizeInWords++;
+        }
+
+        // Include space for header and footer, then add current block's size
+        prevBlockSizeInWords += 2;
+        prevBlockSizeInWords += currentBlock->size / sizeof(WORD);
+
+        // Adjust size if the current block is not aligned to a WORD boundary
+        if (currentBlock->size % sizeof(WORD) > 0) {
+            prevBlockSizeInWords++;
+        }
+
+        // Ensure size is aligned to 8 bytes
+        while ((prevBlockSizeInWords * sizeof(WORD)) % 8 > 0) {
+            prevBlockSizeInWords++;
+        }
+
+        // Update the previous block's size to the merged size
+        currentBlock->prev->size = prevBlockSizeInWords * sizeof(WORD);
+
+    } else { // If the current block is the last one in the heap
+        // Calculate size in words for the previous block
+        unsigned int prevBlockSizeInWords = currentBlock->prev->size / sizeof(WORD);
+
+        // Adjust size if it's not aligned to a WORD boundary
+        if (currentBlock->prev->size % sizeof(WORD) > 0) {
+            prevBlockSizeInWords++;
+        }
+
+        // Ensure size is aligned to 8 bytes (for double word alignment)
+        while ((prevBlockSizeInWords * sizeof(WORD)) % 8 > 0) {
+            prevBlockSizeInWords++;
+        }
+
+        // Include space for header and footer, then add current block's size
+        prevBlockSizeInWords += 2;
+        prevBlockSizeInWords += currentBlock->size / sizeof(WORD);
+
+        // Update the previous block's size to the merged size
+        currentBlock->prev->size = prevBlockSizeInWords * sizeof(WORD);
     }
     
-    //update link
-    block->prev->next = block->next;
-    if (block->next != 0){
-        block->next->prev = block->prev;
+    // Update links: set the previous block's next pointer to the current block's next
+    currentBlock->prev->next = currentBlock->next;
+    if (currentBlock->next != 0) {
+        currentBlock->next->prev = currentBlock->prev;
     }
-    Block* prev = block->prev;
 
-    //update for explicit list
-    if (freeList == 'E'){
-        //search for block to coalesce
-        ExpList* tempBlock = expHead;
-        while (tempBlock != 0){
-            if (tempBlock->block == block->prev || tempBlock->block == block){
-                freeBlock = tempBlock;
+    Block* mergedBlock = currentBlock->prev;
+
+    // Handle updates for the explicit free list, if applicable
+    if (freeList == 'E') {
+        // Search for the block to coalesce in the explicit free list
+        ExpList* tempFreeListEntry = expHead;
+        while (tempFreeListEntry != 0) {
+            if (tempFreeListEntry->block == currentBlock->prev || tempFreeListEntry->block == currentBlock) {
+                freeListEntry = tempFreeListEntry;
                 break;
-            } 
-            tempBlock = tempBlock->next;
+            }
+            tempFreeListEntry = tempFreeListEntry->next;
         }
 
-        //check if block needs coalescing
-        if (freeBlock != 0){
-            //update block pointer
-            freeBlock->block = block->prev;
+        // If the block was found in the free list, update the entry
+        if (freeListEntry != 0) {
+            freeListEntry->block = currentBlock->prev;
 
-            //update links
-            if (freeBlock->prev != 0){
-                if (freeBlock->next != 0){
-                    freeBlock->prev->next = freeBlock->next;
-                }else{
-                    freeBlock->prev->next = 0;
+            // Update links in the explicit free list
+            if (freeListEntry->prev != 0) {
+                if (freeListEntry->next != 0) {
+                    freeListEntry->prev->next = freeListEntry->next;
+                } else {
+                    freeListEntry->prev->next = 0;
                 }
             }
 
-            //if coalesce was done with block and block->next, and not block->prev and block, update the link of freeBlock->next to freeBlock->next->next,
-            //basically updating the links
-            if (strcmp(conjunction, "right") == 0){
-                if (freeBlock->next != 0){
-                    if (freeBlock->next->next != 0){
-                        ExpList* temp = freeBlock->next;
-                        freeBlock->next = freeBlock->next->next;
-                        freeBlock->next->next->prev = freeBlock->prev;
+            // Handle coalescing direction; if merged with the next block
+            if (strcmp(mergeDirection, "right") == 0) {
+                if (freeListEntry->next != 0) {
+                    if (freeListEntry->next->next != 0) {
+                        ExpList* temp = freeListEntry->next;
+                        freeListEntry->next = freeListEntry->next->next;
+                        freeListEntry->next->next->prev = freeListEntry->prev;
                         free(temp);
-                    }else{
-                        free(freeBlock->next);
-                        freeBlock->next = 0;
+                    } else {
+                        free(freeListEntry->next);
+                        freeListEntry->next = 0;
                     }
                 }
             }
 
-            //update links and expHead if necessary
-            if (freeBlock->next != 0){
-                if (freeBlock->prev != 0){
-                    freeBlock->next->prev = freeBlock->prev;
-                }else{
-                    freeBlock->next->prev = 0;
-                }                    
-            }else if (freeBlock->next == 0){
-                if (freeBlock->prev != 0){
-                    freeBlock->next = freeBlock->prev;
-                    freeBlock->prev->prev = freeBlock;
-                    freeBlock->prev = 0;
+            // Update links and head of the explicit free list if necessary
+            if (freeListEntry->next != 0) {
+                if (freeListEntry->prev != 0) {
+                    freeListEntry->next->prev = freeListEntry->prev;
+                } else {
+                    freeListEntry->next->prev = 0;
+                }
+            } else if (freeListEntry->next == 0) {
+                if (freeListEntry->prev != 0) {
+                    freeListEntry->next = freeListEntry->prev;
+                    freeListEntry->prev->prev = freeListEntry;
+                    freeListEntry->prev = 0;
                 }
             }
-            if (freeBlock != expHead){
-                freeBlock->next = expHead;
-                expHead->prev = freeBlock;
-                expHead = freeBlock;
+            if (freeListEntry != expHead) {
+                freeListEntry->next = expHead;
+                expHead->prev = freeListEntry;
+                expHead = freeListEntry;
             }
         
-        //if block does not need coalescing, create a new ExpList block holding the free block,
-        //set it to the root
-        }else{    
-            freeBlock = malloc(sizeof(ExpList));
-            freeBlock->block = prev;
-            freeBlock->next = expHead;
-            freeBlock->prev = 0;
-            expHead->prev = freeBlock;
-            expHead = freeBlock;
+        } else { // If the block was not in the free list, create a new entry and set it as the root
+            freeListEntry = malloc(sizeof(ExpList));
+            freeListEntry->block = mergedBlock;
+            freeListEntry->next = expHead;
+            freeListEntry->prev = 0;
+            if (expHead != 0) {
+                expHead->prev = freeListEntry;
+            }
+            expHead = freeListEntry;
         }
     }
 
-    free(block);
-    return prev;
+    // Free the current block as it has been merged
+    free(currentBlock);
+    return mergedBlock;
 }
 
-//coalescing function, which further calls merge function
-Block* coalesce(Block* block)
+
+// Function to coalesce (merge) adjacent free blocks in the heap.
+// If the block is the last one in the heap, it coalesces with the remaining free space.
+Block* coalesce(Block* currentBlock) 
 {
-    // if it is the last block, coalesce with the remaining free space
-    if (block->next == 0){
-        //check for double word alignment
-        int sz = block->size/sizeof(WORD);
-        if (block->size % sizeof(WORD) > 0){
-            sz++;
-        }
-        while ((sz*sizeof(WORD))%8 > 0){
-            sz++;
+    // If it is the last block in the heap, extend its size to include the remaining free space
+    if (currentBlock->next == 0) {
+        // Calculate size in words (assuming WORD is the size of one unit in the heap)
+        int sizeInWords = currentBlock->size / sizeof(WORD);
+
+        // Adjust size if it's not aligned to a WORD boundary
+        if (currentBlock->size % sizeof(WORD) > 0) {
+            sizeInWords++;
         }
 
-        if (block->payloadIndex + sz < (heapSize/sizeof(WORD))){
-            int remainingFreeSpace = heapSize/sizeof(WORD) - block->payloadIndex;
-            block->size = remainingFreeSpace*sizeof(WORD);
+        // Ensure the size is aligned to 8 bytes (for double word alignment)
+        while ((sizeInWords * sizeof(WORD)) % 8 > 0) {
+            sizeInWords++;
+        }
+
+        // Check if there is remaining free space to extend into
+        if (currentBlock->payloadIndex + sizeInWords < (heapSize / sizeof(WORD))) {
+            int remainingFreeSpace = heapSize / sizeof(WORD) - currentBlock->payloadIndex;
+            currentBlock->size = remainingFreeSpace * sizeof(WORD);
         }
     }
 
-    ExpList* freeBlock = 0;
+    ExpList* newFreeListEntry = 0;
 
-    if (block->free == 1){
+    // If the block is free, attempt to coalesce with adjacent free blocks
+    if (currentBlock->free == 1) {
         int merged = 0;
-        if (block->prev != 0){
-            if (block->prev->free == 1){
-                block = merge(block, freeBlock, "left");
+
+        // Try to merge with the previous block if it's free
+        if (currentBlock->prev != 0) {
+            if (currentBlock->prev->free == 1) {
+                currentBlock = merge(currentBlock, newFreeListEntry, "left");
                 merged = 1;
             }
         }
-        if (block->next != 0){
-            if (block->next->free == 1){
-                block = merge(block->next, freeBlock, "right");
+
+        // Try to merge with the next block if it's free
+        if (currentBlock->next != 0) {
+            if (currentBlock->next->free == 1) {
+                currentBlock = merge(currentBlock->next, newFreeListEntry, "right");
                 merged = 1;
             }
-        }   
+        }
 
-        if (merged == 0){
-            //if coalescing did not happen, create a new ExpList block, pointing to the free block
-            //set it to the root
-            if (freeList == 'E'){
-                freeBlock = malloc(sizeof(ExpList));
-                freeBlock->block = block;
-                freeBlock->next = expHead;
-                freeBlock->prev = 0;
-                expHead->prev = freeBlock;
-                expHead = freeBlock;
+        // If no merging occurred, add the block to the explicit free list
+        if (merged == 0) {
+            // Only do this if the free list type is 'E' (explicit free list)
+            if (freeList == 'E') {
+                newFreeListEntry = malloc(sizeof(ExpList));
+                newFreeListEntry->block = currentBlock;
+                newFreeListEntry->next = expHead;
+                newFreeListEntry->prev = 0;
+                if (expHead != 0) {
+                    expHead->prev = newFreeListEntry;
+                }
+                expHead = newFreeListEntry;
             }
         }
     }
     
-    
-    // update heap
-    if (block->next != 0){
-        int sz = block->size/sizeof(WORD);
-        if (block->size % sizeof(WORD) > 0){
-            sz++;
+    // Update the heap metadata (headers and footers)
+    if (currentBlock->next != 0) {
+        int sizeInWords = currentBlock->size / sizeof(WORD);
+        if (currentBlock->size % sizeof(WORD) > 0) {
+            sizeInWords++;
         }
-        while ((sz*sizeof(WORD))%8 > 0){
-            sz++;
+        while ((sizeInWords * sizeof(WORD)) % 8 > 0) {
+            sizeInWords++;
         }
-        int update = 0;
-        update = (sz+2)*4;
-        heap[block->payloadIndex - 1] = update; // header
-        heap[block->payloadIndex + sz] = update; // footer
+        int headerFooterValue = (sizeInWords + 2) * 4;
+        heap[currentBlock->payloadIndex - 1] = headerFooterValue; // header
+        heap[currentBlock->payloadIndex + sizeInWords] = headerFooterValue; // footer
 
-    }else if (block->next == 0){
-        int sz = block->size/sizeof(WORD);
-
-        int update = 0;
-        update = (sz-1)*4;
-        heap[block->payloadIndex - 1] = update; // header
-        heap[block->payloadIndex + sz - 3] = update; // footer
+    } else if (currentBlock->next == 0) { // Last block in the heap
+        int sizeInWords = currentBlock->size / sizeof(WORD);
+        int headerFooterValue = (sizeInWords - 1) * 4;
+        heap[currentBlock->payloadIndex - 1] = headerFooterValue; // header
+        heap[currentBlock->payloadIndex + sizeInWords - 3] = headerFooterValue; // footer
     }
 
-	return block;
+    return currentBlock;
 }
 
-// LAST TWO DONE
 // Free Function:
 void myfree(void *pointer) {
     Block* block = pointer;

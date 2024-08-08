@@ -48,7 +48,7 @@ ExpList* explicit_best_fit(int size);
 
 // Helper Functions
 void split(Block* block, size_t size, ExpList* freeBlock);
-Block* merge(Block* block, ExpList* freeBlock, char* conjunction);
-Block* coalesce(Block* block);
+Block* merge(Block* currentBlock, ExpList* freeListEntry, char* mergeDirection);
+Block* coalesce(Block* currentBlock);
 
 #endif // HEAP_H
